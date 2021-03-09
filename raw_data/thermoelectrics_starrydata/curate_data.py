@@ -43,8 +43,8 @@ def curate_data(csv_path="sampled_data.csv", write_to_pkg_data=True, method="mod
     print(f"Size of the sampled dataset: {len(df)}")
     curated_df = remove_outliers(df, method=method)
     print(f"Size of the curated dataset: {len(curated_df)}")
-    curated_df.to_csv("curated_data.csv")
-    curated_df.to_csv(pkg_datafile_path)
+    curated_df.to_csv("curated_data.csv", index=False)
+    curated_df.to_csv(pkg_datafile_path, index=False)
 
 
 if __name__ == "__main__":
