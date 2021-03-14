@@ -1,5 +1,7 @@
+import os
 import math
 import json
+import pkg_resources
 
 import numpy as np
 import pandas as pd
@@ -12,8 +14,12 @@ from pymatgen import DummySpecies
 RAW_DATA = pd.read_csv("rawdata_interpolated.csv")
 PROPERTIES = pd.read_csv("properties.csv")
 
+# location of the post-processed data, filenames
+datafile_name = os.path.basename(os.path.dirname(os.path.abspath(__file__)))
+pkg_datafile_path = pkg_resources.resource_filename("discworld.datasets", f"{datafile_name}.csv")
 
-def parse_data(raw_data=RAW_DATA, properties=PROPERTIES, T=1000):
+
+def parse_data(raw_data=RAW_DATA, properties=PROPERTIES, T=1000, write_to_pkg_data=True):
     """Parse figure-of-merit vs year of discovery from raw data."""
     ddict = {}
     for row in raw_data.iterrows():
@@ -25,6 +31,8 @@ def parse_data(raw_data=RAW_DATA, properties=PROPERTIES, T=1000):
         if math.isnan(zt):
             continue
         if year < 1990:
+            continue
+        if zt < 0:
             continue
         try:
             pmg_composition = Composition(composition)
@@ -61,6 +69,8 @@ def parse_data(raw_data=RAW_DATA, properties=PROPERTIES, T=1000):
     print(f"Number of data points: {len(max_zt_T1000)}")
     max_zt_T1000_df = pd.DataFrame(max_zt_T1000)
     max_zt_T1000_df.to_csv("sampled_data.csv", index=False)
+    if write_to_pkg_data:
+        max_zt_T1000_df.to_csv(pkg_datafile_path, index=False)
 
 
 if __name__ == "__main__":
